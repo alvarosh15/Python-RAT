@@ -1,0 +1,6 @@
+- Eliminados todos los comandos relacionados con webcam, capturas de pantalla, etc... 
+también los de setwallpaper, volumeup, volumedown, algunos de desactivar teclado, raton... 
+
+Esto dificulta la detección, ya que si alguien decide hacer un análisis estático no 
+podrá ver las funciones que antes estaban en el fichero para implementar estos comandos,
+que no necesitamos.

