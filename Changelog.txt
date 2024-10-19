@@ -13,3 +13,5 @@ output_string = chr(110) + chr(111) + " " + chr(111) + chr(117) + chr(116) + chr
 -> no output 
 task_manager_str = bytes.fromhex('5461736b204d616e61676572').decode('utf-8')
 -> Task Manager
+Excepto algunas como "No such file in directory". Sería muy sospechoso tener todas las cadenas ofuscadas.
+

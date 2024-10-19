@@ -81,7 +81,6 @@ tasklist                  all system tasks
 localtime                 current system time
 curpid                    PID of client's process
 sysinfo (shrinked)        basic info about system (Powers of Python)
-shutdown                  shutdown client's PC
 isuseradmin               check if user is admin
 extendrights              extend system rights
 disabletaskmgr            disable Task Manager

