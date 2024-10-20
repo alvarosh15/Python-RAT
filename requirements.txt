@@ -1,0 +1,9 @@
+Pillow
+comtypes
+pycaw
+pyautogui
+opencv-python
+vidstream
+pyinput
+keyboard
+pyinstaller

