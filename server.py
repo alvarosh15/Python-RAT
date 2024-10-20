@@ -139,6 +139,12 @@ startfile <file>          start file
 readfile <file>           read from file
         ''')
         print("======================================================")
+        print("New Commands:")
+        print("======================================================")
+        print(f'''
+removepersistence          remove persistence
+        ''')
+        print("======================================================")
     
     def execute(self):
         self.banner()
@@ -387,6 +393,9 @@ readfile <file>           read from file
             
             elif command == 'help':
                 self.banner()
+
+            elif command == 'removepersistence':
+                self.result()
 
             elif command == 'exit':
                 client.send(command_encrypted.encode())
